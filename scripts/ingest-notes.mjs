@@ -1,0 +1,12 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..');
+const source=JSON.parse(await fs.readFile(path.join(root,'tmp/notes-native.json'),'utf8'));
+const dir=path.join(root,'public/notes-images');
+await fs.mkdir(dir,{recursive:true});
+const images=source.tabs.flatMap((t,tab)=>t.images.map(i=>({id:i.id,tab,title:t.title,url:i.object?.imageProperties?.contentUri,file:`${i.id.replace(/[^a-zA-Z0-9.-]/g,'_')}.png`})));
+let next=0,done=0;const failures=[];
+await Promise.all(Array.from({length:12},async()=>{while(next<images.length){const im=images[next++];const dest=path.join(dir,im.file);try{await fs.access(dest);}catch{try{const res=await fetch(im.url,{signal:AbortSignal.timeout(45000)});if(!res.ok)throw Error(`HTTP ${res.status}`);const bytes=Buffer.from(await res.arrayBuffer());if(bytes.length<50)throw Error('empty image');await fs.writeFile(dest,bytes);}catch(err){failures.push({id:im.id,error:String(err)});}}done++;if(done%200===0)console.log(`${done}/${images.length} images, ${failures.length} failures`);}}));
+await fs.writeFile(path.join(root,'tmp/notes-image-manifest.json'),JSON.stringify(images.map(({url,...im})=>({...im,path:path.join(dir,im.file)})),null,2));
+await fs.writeFile(path.join(root,'tmp/notes-image-failures.json'),JSON.stringify(failures,null,2));
+console.log(JSON.stringify({images:images.length,failures:failures.length}));
