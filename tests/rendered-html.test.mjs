@@ -9,6 +9,7 @@ for (const [route,heading] of [
  ["/","Two theories."], ["/learn","Where quantum field theory begins"],
  ["/foundations","The tools behind the equations"], ["/labs","Physics experiments"],
  ["/notes","Your notes"], ["/quiz","practice"],
+ ["/geometry","What do the signs build?"], ["/de-sitter","de Sitter correspondences"], ["/news","research watch"],
 ]) {
  test(`production HTML renders ${route}`,async()=>{
   const response=await worker.fetch(new Request(`https://atlas.example${route}`,{headers:{accept:"text/html",host:"atlas.example"}}),{ASSETS:{fetch:async()=>new Response("Not found",{status:404})}},{waitUntil(){},passThroughOnException(){}});
@@ -19,6 +20,7 @@ for (const [route,heading] of [
   if(route!=="/learn") assert.ok(html.toLowerCase().includes(heading.toLowerCase()),`Missing ${heading}`);
   else { assert.match(html,/GGD page/); assert.match(html,/eq-derivation/); }
   assert.doesNotMatch(html,/codex-preview|react-loading-skeleton|Your site is taking shape/);
+  assert.doesNotMatch(html,/class="katex-error"/);
   assert.ok(html.includes('https://atlas.example/og.png'),'Social image URL should use the request host');
  });
 }

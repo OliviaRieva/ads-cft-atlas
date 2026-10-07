@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./atlas.css";
 import "katex/dist/katex.min.css";
 import "./observatory.css";
+import "./daylight.css";
 import SiteNav from './SiteNav';
 
 const geistSans = Geist({

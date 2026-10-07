@@ -8,6 +8,13 @@
       "when": 1790939374882,
       "tag": "0000_curved_iron_fist",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791382535895,
+      "tag": "0001_graceful_winter_soldier",
+      "breakpoints": true
     }
   ]
 }

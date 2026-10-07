@@ -7,6 +7,18 @@ export const learners = sqliteTable("learners", {
   createdAt: integer("created_at").notNull(),
 }, t => [uniqueIndex("learners_recovery_idx").on(t.recoveryHash)]);
 
+export const researchNews = sqliteTable("research_news", {
+  id: text("id").primaryKey(),
+  data: text("data").notNull(),
+  eventDate: text("event_date").notNull(),
+  checkedAt: text("checked_at").notNull(),
+}, t => [index("research_news_event_idx").on(t.eventDate)]);
+
+export const researchChecks = sqliteTable("research_checks", {
+  checkedAt: text("checked_at").primaryKey(),
+  count: integer("count").notNull(),
+});
+
 export const learnerTokens = sqliteTable("learner_tokens", {
   tokenHash: text("token_hash").primaryKey(),
   learnerId: text("learner_id").notNull().references(() => learners.id),
