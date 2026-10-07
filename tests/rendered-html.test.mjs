@@ -6,9 +6,9 @@ register('./cloudflare-loader.mjs',import.meta.url);
 const {default:worker}=await import('../dist/server/index.js');
 
 for (const [route,heading] of [
- ["/","Keep the whole picture."], ["/learn","Where quantum field theory begins"],
- ["/foundations","The tools behind the equations"], ["/labs","Give the symbols something to do."],
- ["/notes","Your notes, with the mathematics intact."], ["/quiz","practice"],
+ ["/","Two theories."], ["/learn","Where quantum field theory begins"],
+ ["/foundations","The tools behind the equations"], ["/labs","Physics experiments"],
+ ["/notes","Your notes"], ["/quiz","practice"],
 ]) {
  test(`production HTML renders ${route}`,async()=>{
   const response=await worker.fetch(new Request(`https://atlas.example${route}`,{headers:{accept:"text/html",host:"atlas.example"}}),{ASSETS:{fetch:async()=>new Response("Not found",{status:404})}},{waitUntil(){},passThroughOnException(){}});

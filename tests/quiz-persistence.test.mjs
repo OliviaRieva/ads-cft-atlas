@@ -53,16 +53,17 @@ function database(filename = ":memory:") {
 }
 const rawTest = (sqlite, id) => JSON.parse(sqlite.prepare("SELECT snapshot FROM quiz_tests WHERE id = ?").get(id).snapshot);
 
-test("question bank has 128 distinct, complete questions and balanced topics", () => {
-  assert.equal(questions.length, 128);
+test("question bank has 304 distinct, complete questions across all requested categories", () => {
+  assert.equal(questions.length, 304);
   assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
   assert.equal(new Set(questions.map(q => q.prompt)).size, questions.length);
-  for (const topic of QUIZ_TOPICS) assert.equal(questions.filter(q => q.topic === topic).length, 16);
+  for (const topic of QUIZ_TOPICS) assert.ok(questions.filter(q => q.topic === topic).length >= 7, topic);
+  assert.equal(questions.filter(q => !q.id.startsWith("expand-")).length, 128);
   for (const q of questions) {
     assert.equal(new Set(q.options).size, 4);
     assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length);
     assert.ok(q.explanation.length > 60);
-    assert.ok(q.pages[0] >= 1 && q.pages[1] >= q.pages[0] && q.pages[1] <= 95);
+    assert.ok(q.pages[0] >= 1 && q.pages[1] >= q.pages[0] && q.pages[1] <= 98);
   }
 });
 test("scheduler prioritizes mistakes and learning, enforces filters, and never repeats within a test", () => {
@@ -72,11 +73,12 @@ test("scheduler prioritizes mistakes and learning, enforces filters, and never r
     "qft-02": { attempts: 3, correct: 3, wrong: 0, streak: 3, lastAnswerId: 4 },
   };
   const result = engine.buildTest(questions, { ...defaults, topics: ["QFT"], count: 100 }, progress, "qft-01", [], () => .5);
-  assert.equal(result.ids.length, 16);
-  assert.equal(new Set(result.ids).size, 16);
+  const available = questions.filter(q => q.topic === "QFT").length;
+  assert.equal(result.ids.length, available);
+  assert.equal(new Set(result.ids).size, available);
   assert.notEqual(result.ids[0], "qft-01");
   assert.equal(result.ids.at(-1), "qft-02");
-  assert.ok(result.notice.includes("16"));
+  assert.ok(result.notice.includes(String(available)));
   const filtered = engine.buildTest(questions, { ...defaults, topics: ["QFT"], hardOnly: true, mistakesOnly: true }, progress, null, [], () => .5);
   assert.deepEqual(filtered.ids, ["qft-03"]);
   const one = engine.buildTest(questions, { ...defaults, topics: ["QFT"], count: 1 }, progress, "qft-01", [], () => .5);
@@ -214,20 +216,21 @@ test("mastery is earned across three separate tests and resets on a subsequent w
   try {
     const learner = await store.createLearner(db);
     const ids = new Set();
+    const available = questions.filter(q => q.topic === "QFT").length;
     for (let round = 0; round < 3; round++) {
-      const started = await store.startTest(db, learner.id, { ...defaults, topics: ["QFT"], count: 16 });
+      const started = await store.startTest(db, learner.id, { ...defaults, topics: ["QFT"], count: available });
       ids.add(started.id);
       for (const key of rawTest(sqlite, started.id)) await store.answerQuestion(db, learner.id, { testId: started.id, questionId: key.id, chosen: key.answer });
-      assert.equal((await store.getDashboard(db, learner.id)).mastered, round === 2 ? 16 : 0);
+      assert.equal((await store.getDashboard(db, learner.id)).mastered, round === 2 ? available : 0);
     }
     assert.equal(ids.size, 3);
     const next = await store.startTest(db, learner.id, { ...defaults, topics: ["QFT"], count: 1 });
     const key = rawTest(sqlite, next.id)[0];
     await store.answerQuestion(db, learner.id, { testId: next.id, questionId: key.id, chosen: (key.answer + 1) % 4 });
     const dashboard = await store.getDashboard(db, learner.id);
-    assert.equal(dashboard.mastered, 15);
-    assert.equal(dashboard.attempts, 49);
-    assert.equal(dashboard.correct, 48);
+    assert.equal(dashboard.mastered, available - 1);
+    assert.equal(dashboard.attempts, 3 * available + 1);
+    assert.equal(dashboard.correct, 3 * available);
     assert.equal(dashboard.trouble[0].streak, 0);
   } finally { close(); }
 });

@@ -1,10 +1,11 @@
-export const QUIZ_TOPICS = ["QFT", "Group theory", "CFT", "GR", "AdS", "SUSY", "String theory", "AdS/CFT"] as const;
+export const QUIZ_TOPICS = ["QFT", "QED", "QCD", "Mathematical tools", "Group theory", "CFT", "GR", "AdS", "de Sitter", "SUSY", "String theory", "AdS/CFT"] as const;
 export type QuizTopic = typeof QUIZ_TOPICS[number];
 export type QuizDifficulty = "Foundation" | "Applied" | "Hard";
 export type QuizQuestion = {
   id: string; topic: QuizTopic; difficulty: QuizDifficulty;
   prompt: string; options: string[]; answer: number; explanation: string;
   pages: [number, number]; prerequisite?: boolean;
+  reference?: { label: string; url: string };
 };
 export type QuestionProgress = { attempts: number; correct: number; streak: number; lastAnswerId: number; wrong: number };
 export type QuizSettings = { topics: QuizTopic[]; count: number; hardOnly: boolean; mistakesOnly: boolean; feedback: "immediate" | "end" };

@@ -1,4 +1,5 @@
 import type { QuizQuestion, QuizTopic, QuizDifficulty } from "../../lib/quiz-types";
+import { extraQuestions } from "./questions-extra";
 
 // Original teaching questions. Page ranges point to the course discussion;
 // prerequisite questions explicitly extend it with the required foundations.
@@ -140,4 +141,5 @@ export const questions: QuizQuestion[] = [
   q("holo-14", "AdS/CFT", "Hard", [94,94], "Why can throat excitations remain relevant to an observer's low-energy limit even when their local energy is large?", ["They violate energy conservation", "The near-horizon redshift makes their energy at infinity small", "Their local energy has no units", "All throat states are massless in ten dimensions"], 1, "In the throat E∞∼(r/L)Elocal. At small r/L, substantial local excitation energies can correspond to small conserved energies measured far away."),
   q("holo-15", "AdS/CFT", "Applied", [95,95], "The SO(6) isometries of S⁵ match which boundary symmetry?", ["Spacetime translations", "The SU(N) local gauge redundancy", "The R-symmetry acting on the six SYM scalars", "Only time reversal"], 2, "S⁵ rotations correspond to R-symmetry. The AdS₅ isometries supply the four-dimensional conformal symmetry, while gauge redundancy is a different structure."),
   q("holo-16", "AdS/CFT", "Hard", [88,95], "What do bulk string loops and finite string-length corrections correspond to schematically in the boundary expansion?", ["Both are exactly the same correction", "Loops change spacetime dimension; string length changes N", "Both vanish whenever βg=0", "Loops give nonplanar/1/N effects; string-length corrections give finite-λ effects"], 3, "At fixed λ, the genus expansion is organized by powers of 1/N², while α′/L²∼λ^(−1/2) controls finite-string-length effects. Concrete observables may begin at higher powers of these parameters."),
+  ...extraQuestions,
 ];

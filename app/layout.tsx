@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./atlas.css";
 import "katex/dist/katex.min.css";
+import "./observatory.css";
 import SiteNav from './SiteNav';
 
 const geistSans = Geist({
