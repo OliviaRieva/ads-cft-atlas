@@ -1,0 +1,11 @@
+"use client";
+import {useState} from 'react';
+import Link from 'next/link';
+import MathFormula from '../Math';
+import {bridges} from '../content/bridges';
+import BoundaryWalk from './BoundaryWalk';
+import D3Lab from './D3Lab';
+export default function Correspondence(){
+ const [selected,setSelected]=useState('algebra');const b=bridges.find(x=>x.id===selected)!;
+ return <main className="correspondence-page"><header className="correspondence-hero"><span className="eyebrow">THE DICTIONARY · THE CONSTRUCTION · THE LIMIT</span><h1>Different language.<br/><span>The same physics.</span></h1><p>Here the matching ideas line up. In your <Link href="/notes">reading notes</Link>, each theory follows its own path.</p><nav><a href="#matching-dictionary">Match the ideas ↓</a><a href="#boundary-walk">Understand chapter 4 ↓</a><a href="#d3-lab">D3-brane lab ↓</a></nav></header><section className="matching-dictionary" id="matching-dictionary"><header><h2>Make the connection.</h2><p>A match of symmetries is a clue. The dictionary also matches observables and their dynamics.</p></header><div className="dictionary-choices" role="group" aria-label="Correspondence to explore">{bridges.map(x=><button key={x.id} aria-pressed={x.id===selected} onClick={()=>setSelected(x.id)}>{x.label}</button>)}</div><div className="dictionary-pair" key={b.id}><article className="dictionary-cft"><span>CFT / BOUNDARY</span><h3>{b.cft.title}</h3><MathFormula tex={b.cft.tex}/><p>{b.cft.text}</p><ol>{b.cft.steps.map(s=><li key={s}>{s}</li>)}</ol><Link href={`/learn?page=${b.cft.page}`}>Derivation · GGD p. {b.cft.page} ↗</Link></article><div className="dictionary-connector" aria-hidden="true">⟷</div><article className="dictionary-ads"><span>AdS / BULK</span><h3>{b.ads.title}</h3><MathFormula tex={b.ads.tex}/><p>{b.ads.text}</p><ol>{b.ads.steps.map(s=><li key={s}>{s}</li>)}</ol><Link href={`/learn?page=${b.ads.page}`}>Derivation · GGD p. {b.ads.page} ↗</Link></article></div><div className="dictionary-insight" aria-live="polite"><p>{b.connection}</p>{b.note&&<small>{b.note}</small>}</div></section><BoundaryWalk/><D3Lab/><footer className="reading-footer"><Link href="/notes?view=branes">Read all chapter 7 derivations →</Link><Link href="/geometry">Explore global AdS, Poincaré patches and causal diagrams →</Link></footer></main>;
+}

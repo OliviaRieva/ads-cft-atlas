@@ -5,6 +5,7 @@ import "./atlas.css";
 import "katex/dist/katex.min.css";
 import "./observatory.css";
 import "./daylight.css";
+import "./reading.css";
 import SiteNav from './SiteNav';
 
 const geistSans = Geist({

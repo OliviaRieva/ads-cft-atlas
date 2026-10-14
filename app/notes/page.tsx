@@ -1,2 +1,2 @@
-import NotesReader from './NotesReader';
-export default function Page(){return <NotesReader/>}
+import ReadingRoom from './ReadingRoom';
+export default function Page(){return <ReadingRoom/>}

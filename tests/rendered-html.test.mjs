@@ -8,7 +8,7 @@ const {default:worker}=await import('../dist/server/index.js');
 for (const [route,heading] of [
  ["/","Two theories."], ["/learn","Where quantum field theory begins"],
  ["/foundations","The tools behind the equations"], ["/labs","Physics experiments"],
- ["/notes","Your notes"], ["/quiz","practice"],
+ ["/notes","Follow the connection"], ["/notes/source","Your notes"], ["/correspondence","Different language"], ["/quiz","practice"],
  ["/geometry","What do the signs build?"], ["/de-sitter","de Sitter correspondences"], ["/news","research watch"],
 ]) {
  test(`production HTML renders ${route}`,async()=>{

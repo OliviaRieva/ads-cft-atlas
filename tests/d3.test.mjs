@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import ts from 'typescript';
+const mod={exports:{}};
+new Function('module','exports',ts.transpileModule(fs.readFileSync(new URL('../lib/d3.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText)(mod,mod.exports);
+const d=mod.exports,p={N:1000,lambda:100,alphaPrime:1};
+test('D3 parameters use the course 2pi convention',()=>{const v=d.parameters(p);assert.ok(Math.abs(v.L4-4*Math.PI*v.gs*p.N*p.alphaPrime**2)<1e-10);assert.equal(v.curvature,1/Math.sqrt(200));});
+test('cluster charges conserve N and stack harmonic function reduces correctly',()=>{for(const n of [2,10,1001]){const c=d.centresFor(n,[0,0,0,0]);assert.equal(c.reduce((x,b)=>x+b.charge,0),n);assert.equal(d.groupedCentres(c)[0].charge,n);assert.ok(Math.abs(d.harmonicU([0,2],c,{...p,N:n})-(1+200/16))<1e-10);}});
+test('co-located static observers exchange equal frequencies; deep emitter redshifts outward',()=>{const c=d.centresFor(1000,[0,0]);assert.equal(d.frequencyRatio([0,1],[0,1],c,p),1);assert.ok(d.frequencyRatio([0,.1],[0,10],c,p)<.05);assert.ok(Math.abs(d.frequencyRatio([0,1],[0,2],c,p,'throat')-.5)<1e-12);});
+test('fixed-U masses survive alpha prime limit and scaled metric converges',()=>{const q={...p,alphaPrime:1e-6};assert.equal(d.stretchedMass(-2,2),4/(2*Math.PI));assert.ok(d.discardedConstant(2,q)<1e-10);const a=d.scaledMetric(2,q,'full'),b=d.scaledMetric(2,q,'throat');for(const k of Object.keys(a))assert.ok(Math.abs(a[k]/b[k]-1)<1e-10);});
+test('observer anchoring preserves position when switching coordinate labels',()=>{const q={...p,alphaPrime:.1},a={anchor:'U',position:[1,3]},b=d.changeAnchor(a,'r',q);d.observerU(b,q).forEach((v,i)=>assert.ok(Math.abs(v-a.position[i])<1e-12));});
+test('thermal static observers cannot occupy or cross the horizon',()=>{const c=d.centresFor(1000,[0]);assert.ok(Number.isNaN(d.lapse([0,.5],c,p,'thermal',1)));assert.ok(d.lapse([0,2],c,p,'thermal',1)>0);assert.equal(d.thermalTemperature(1,p),1/(Math.PI*Math.sqrt(200)));});
+test('throat embedding obeys its induced spatial metric',()=>{const a=d.throatEmbedding();assert.ok(Math.abs(a[0].radius-1)<1e-9);for(let i=1;i<a.length-1;i++){const left=a[i-1],right=a[i+1],rho=a[i].rho;const dr=(right.radius-left.radius)/(right.rho-left.rho),dz=(right.height-left.height)/(right.rho-left.rho);assert.ok(Math.abs((dr*dr+dz*dz)/Math.sqrt(1+rho**-4)-1)<.02);}});

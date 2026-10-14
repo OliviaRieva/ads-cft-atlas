@@ -6,9 +6,20 @@ A source-linked, interactive study companion for the NBI Gauge/Gravity Duality 2
 
 - 98 page-by-page lessons, preserving the original PDF and page images.
 - 448 equation entries with explanations, derivations, conventions and corrections.
-- Mathematical and physical foundations, six interactive labs, and a 128-question initial practice bank.
+- Mathematical and physical foundations, interactive geometry labs, and a 304-question practice bank.
 - All 17 tabs of the supplied Google Doc, including 3,891 image/drawing objects and 330 native equations; source order is retained.
 - Reader’s guides synthesize notebook questions. OCR supports search, not authoritative mathematical transcription. Original images remain available at full resolution.
+- `/notes`: 106 rewritten reading sections and 477 native equation blocks from the green-selected notes and chapter 7. Includes the additional SUSY highlights fetched on 13 October 2026. CFT and AdS flow independently; explicit cross-links connect related passages without matching their row positions.
+- `/correspondence`: a matching dictionary, a five-step chapter-4 source/response explanation, and a D3-brane lab with movable bundles and observers, probe strings, redshift, decoupling and thermal geometry.
+- `/notes/source`: the preserved earlier image-based archive. It is not a live synchronization of the Google Doc.
+
+## Editing the new reading pages
+
+Text and LaTeX are in `app/content/reading-cft.ts`, `reading-ads.ts`, and `reading-susy-strings.ts`. `reading.ts` combines them and defines explicit cross-column connections. `app/notes/ReadingRoom.tsx` renders the independent columns; `app/reading.css` controls their appearance. The correspondence components are in `app/correspondence/`; numerical D3 formulas are in `lib/d3.ts`.
+
+The source review is mapped by selected paragraph ranges and visually inspected image IDs. Duplicate screenshots and repeated explanations are consolidated. This is not an occurrence-by-occurrence equation ledger, nor a new certification of every page of the original course. An incomplete 10D SUSY transformation in the notes is presented structurally with proportionality signs rather than guessed normalization coefficients. KaTeX tests validate notation syntax, not physical correctness.
+
+The D3 lab uses the course convention `gYM² = 2πgs`, `L⁴ = 2λα′²`. Its string counts are probe illustrations and do not backreact. Its SUSY checkbox reveals multiplet information rather than changing the background theory. The full extremal geometry, decoupled throat, and coincident thermal black brane are distinct models. The spatial throat drawing has a compressed vertical scale; the frequency map compares supported static observers and does not trace null geodesics.
 
 The source is *Lecture notes for GGD 2021*, Stefano Baiguera, Niels Obers and Gerben Oling (3 June 2021). Notes were imported from the document supplied by the site owner. Corrections are marked separately from originals. This is an explanatory companion, not a claim of infallibility or coverage of all research beyond this course.
 
