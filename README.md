@@ -54,6 +54,14 @@ The repository includes course/reference assets, so its initial download is larg
 
 The original checkout keeps `origin` for the existing Sites host and adds a separate `github` remote for this public repository. To upload new committed source to GitHub, use `git push github main`. This does **not** deploy the website; website publication remains a separate Sites workflow. A normal clone from this GitHub repository will instead call GitHub `origin`, so use `git push origin main` there.
 
+## Repository maintenance
+
+[![Daily maintenance](https://github.com/OliviaRieva/ads-cft-atlas/actions/workflows/daily-maintenance.yml/badge.svg)](https://github.com/OliviaRieva/ads-cft-atlas/actions/workflows/daily-maintenance.yml)
+
+GitHub runs the build, TypeScript checks and tests daily at 09:17 Copenhagen time. Successful scheduled/manual runs refresh the [content index](docs/CONTENT_INDEX.md) only when its source data change. Dependabot proposes dependency updates for review; nothing is automatically merged or deployed. Automated changes use bot attribution, and unchanged content produces no commit.
+
+See [maintenance controls](docs/MAINTENANCE.md) for the full scope, test limitations and how to pause or stop both schedules.
+
 ## Learning progress
 
 D1 stores individual learner profiles, test snapshots and answers. A random HttpOnly cookie identifies a profile. Only hashes of authentication/recovery secrets are stored. Save an ATLAS recovery code to restore a profile on another browser/device. Do not share that code. Clearing cookies without a recovery code loses access to the profile; progress is not merely localStorage data. Browser storage is used only for the reading-place preference.

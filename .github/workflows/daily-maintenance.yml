@@ -1,0 +1,110 @@
+name: Daily maintenance
+
+on:
+  schedule:
+    - cron: '17 9 * * *'
+      timezone: Europe/Copenhagen
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: maintenance-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    if: >-
+      github.event_name == 'push' || github.event_name == 'pull_request' ||
+      (github.repository == 'OliviaRieva/ads-cft-atlas' && vars.ATLAS_MAINTENANCE_PAUSED != 'true')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.index.outputs.changed }}
+      content: ${{ steps.index.outputs.content }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npx --no-install tsc --noEmit
+      - run: node --test tests/*.test.mjs
+      - name: Compare the authored content index
+        id: index
+        run: node scripts/maintenance-index.mjs --github-output
+
+  refresh-index:
+    needs: checks
+    if: >-
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') &&
+      github.repository == 'OliviaRieva/ads-cft-atlas' && github.ref == 'refs/heads/main' &&
+      vars.ATLAS_MAINTENANCE_PAUSED != 'true' && needs.checks.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      # This job never checks out or executes repository code. Only one fixed
+      # generated-document path may be written, from the successfully tested SHA.
+      - name: Publish an index change as GitHub Actions bot
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          INDEX_CONTENT: ${{ needs.checks.outputs.content }}
+          TESTED_SHA: ${{ github.sha }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const path = 'docs/CONTENT_INDEX.md';
+            const content = process.env.INDEX_CONTENT || '';
+            if (!/^[A-Za-z0-9+/]+={0,2}$/.test(content) || content.length > 250000) {
+              throw new Error('Invalid or oversized generated index');
+            }
+            const document = Buffer.from(content, 'base64').toString('utf8');
+            if (!document.startsWith('# Content index\n\nGenerated from the authored course,')) {
+              throw new Error('Unexpected generated document');
+            }
+            const head = await github.rest.repos.getCommit({ owner, repo, ref: 'main' });
+            if (head.data.sha !== process.env.TESTED_SHA) {
+              core.notice('main changed after validation; leaving it untouched.');
+              return;
+            }
+            const base = await github.rest.git.getCommit({ owner, repo, commit_sha: process.env.TESTED_SHA });
+            const blob = await github.rest.git.createBlob({ owner, repo, content, encoding: 'base64' });
+            const tree = await github.rest.git.createTree({
+              owner, repo, base_tree: base.data.tree.sha,
+              tree: [{ path, mode: '100644', type: 'blob', sha: blob.data.sha }]
+            });
+            if (tree.data.sha === base.data.tree.sha) {
+              core.notice('The index is unchanged; no commit is needed.');
+              return;
+            }
+            const commit = await github.rest.git.createCommit({
+              owner, repo,
+              message: 'docs: refresh content index (automated)',
+              tree: tree.data.sha, parents: [process.env.TESTED_SHA],
+              author: { name: 'github-actions[bot]', email: '41898282+github-actions[bot]@users.noreply.github.com' },
+              committer: { name: 'github-actions[bot]', email: '41898282+github-actions[bot]@users.noreply.github.com' }
+            });
+            try {
+              // Never overwrite concurrent work. A new main commit makes this
+              // update non-fast-forward, so GitHub rejects it atomically.
+              await github.rest.git.updateRef({ owner, repo, ref: 'heads/main', sha: commit.data.sha, force: false });
+              core.notice(`Updated ${path}: ${commit.data.sha}`);
+            } catch (error) {
+              if (error.status === 409 || error.status === 422) {
+                core.warning('The branch moved or disallowed the update; no changes were pushed.');
+                return;
+              }
+              throw error;
+            }
