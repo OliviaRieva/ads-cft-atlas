@@ -1,6 +1,18 @@
 # The Holographic Atlas
 
-A source-linked, interactive study companion for the NBI Gauge/Gravity Duality 2021 course.
+An interactive AdS/CFT learning project by Olivia Rieva, built around the NBI Gauge/Gravity Duality course and personal study notes.
+
+[Open the website](https://holographic-atlas.oliviarieva.chatgpt.site) · [Read the CFT/AdS notes](https://holographic-atlas.oliviarieva.chatgpt.site/notes) · [Explore the correspondence and D3-brane lab](https://holographic-atlas.oliviarieva.chatgpt.site/correspondence) · [Practice questions](https://holographic-atlas.oliviarieva.chatgpt.site/quiz)
+
+The central question is not just *what is the formula?*, but *why do we introduce it, what assumptions make it valid, and how does it connect the two theories?* Field theory and geometry have independent reading paths, with explicit connections and a separate matching dictionary.
+
+**My role:** learning goals, personal notes, research questions, interaction design, and iterative feedback. Implementation and explanatory content were developed with Codex. This is a learning and scientific-communication project, not a claim to have derived or independently verified all of AdS/CFT. Course authors and sources are credited below.
+
+<p align="center">
+  <a href="https://holographic-atlas.oliviarieva.chatgpt.site">
+    <img src="public/og.png" alt="The Holographic Atlas — AdS/CFT from first principles" width="860">
+  </a>
+</p>
 
 ## Content
 
@@ -26,6 +38,21 @@ The source is *Lecture notes for GGD 2021*, Stefano Baiguera, Niels Obers and Ge
 ## Development
 
 Node.js >=22.13.0. Install with `npm install`; run `npm run dev`, `npm run build`, and `npm test`. Retain the vinext / Cloudflare Workers structure and Sites build plugin.
+
+```sh
+git clone https://github.com/OliviaRieva/ads-cft-atlas.git
+cd ads-cft-atlas
+npm ci
+npm run dev
+```
+
+The last published content update passed 60 automated tests covering equation rendering, source mappings, numerical physics, production page rendering, and quiz persistence. Browser visual review and a separate equation-occurrence completeness audit remain distinct tasks; passing the tests does not certify every physical statement.
+
+The repository includes course/reference assets, so its initial download is larger than a code-only application. Ignored local exports, credentials, dependency directories, build output, runtime databases and learner progress are not uploaded.
+
+### Working on the original checkout
+
+The original checkout keeps `origin` for the existing Sites host and adds a separate `github` remote for this public repository. To upload new committed source to GitHub, use `git push github main`. This does **not** deploy the website; website publication remains a separate Sites workflow. A normal clone from this GitHub repository will instead call GitHub `origin`, so use `git push origin main` there.
 
 ## Learning progress
 
