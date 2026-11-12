@@ -25,6 +25,15 @@ The central question is not just *what is the formula?*, but *why do we introduc
 - `/correspondence`: a matching dictionary, a five-step chapter-4 source/response explanation, and a D3-brane lab with movable bundles and observers, probe strings, redshift, decoupling and thermal geometry.
 - `/notes/source`: the preserved earlier image-based archive. It is not a live synchronization of the Google Doc.
 
+## Suggested learning path
+
+1. Start with the [CFT and AdS reading room](https://holographic-atlas.oliviarieva.chatgpt.site/notes). Follow either column independently, then use its cross-links to connect field-theory concepts with geometry.
+2. Open the [correspondence dictionary and D3-brane lab](https://holographic-atlas.oliviarieva.chatgpt.site/correspondence). Compare the full extremal geometry with the decoupled throat before exploring the thermal model; these are distinct physical settings.
+3. Use the [practice questions](https://holographic-atlas.oliviarieva.chatgpt.site/quiz) to identify topics to revisit. Save your ATLAS recovery code if you want to recover learning progress on another browser or device.
+4. When an equation or explanation is unclear, compare it with the preserved source images and the stated conventions. Rendered notation and passing software tests do not independently establish physical correctness.
+
+For a source-file inventory, see the [content index](docs/CONTENT_INDEX.md). To suggest a correction, include the page, equation or passage, the proposed change, and a supporting source so the discrepancy can be checked.
+
 ## Editing the new reading pages
 
 Text and LaTeX are in `app/content/reading-cft.ts`, `reading-ads.ts`, and `reading-susy-strings.ts`. `reading.ts` combines them and defines explicit cross-column connections. `app/notes/ReadingRoom.tsx` renders the independent columns; `app/reading.css` controls their appearance. The correspondence components are in `app/correspondence/`; numerical D3 formulas are in `lib/d3.ts`.
